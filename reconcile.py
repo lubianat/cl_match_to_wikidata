@@ -1,4 +1,4 @@
-from wdcuration import query_wikidata
+from wdcuration import query_wikidata, render_qs_url
 import json
 from pathlib import Path
 import pandas as pd
@@ -25,7 +25,7 @@ def main():
     for key in new_keys:
         qs += f'{all_cl_matches[key]}|P7963|"{key}"' + "\n"
 
-    print(qs)
+    print(render_qs_url(qs))
 
 
 if __name__ == "__main__":

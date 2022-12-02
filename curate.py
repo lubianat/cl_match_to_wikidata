@@ -1,8 +1,9 @@
 from black import main
 import pandas as pd
 import json
-from wdcuration.wdcuration import check_and_save_dict
+from wdcuration.wdcuration import check_and_save_dict, WikidataDictAndKey, NewItemConfig
 from pathlib import Path
+import random
 
 
 def main():
@@ -10,20 +11,39 @@ def main():
     df = pd.read_csv("cl_clean.csv")
     previous_cl_matches = json.loads(HERE.joinpath("cl_on_wikidata.json").read_text())
 
-    for i, row in df.iterrows():
-        if row["id"] in previous_cl_matches:
-            continue
-        else:
+    ids_to_add = list(set(df["id"]) - set(previous_cl_matches))
+
+    ids_to_add = sorted(ids_to_add)
+
+    random.shuffle(ids_to_add)
+
+    try:
+        for id_to_add in ids_to_add:
+
+            row = df[df["id"] == id_to_add]
             master_dict = {"cl_on_wikidata": previous_cl_matches}
 
-            previous_cl_matches = check_and_save_dict(
-                master_dict,
-                "cl_on_wikidata",
+            dict_and_key = WikidataDictAndKey(
+                master_dict=master_dict,
+                dict_name="cl_on_wikidata",
                 path=HERE,
-                string=row["name"],
-                dict_key=row["id"],
-                excluded_types=["Q13442814", "Q2996394"],
+                dict_key=row["id"].item(),
+                search_string=row["name"].item(),
+                new_item_config=NewItemConfig(
+                    labels={"en": row["name"].item()},
+                    descriptions={"en": "cell type"},
+                    id_property="P7963",
+                    id_value=row["id"].item(),
+                    item_property_value_pairs={"P31": "Q189118"},
+                ),
+                excluded_types=["Q13442814", "Q2996394", "Q112193867", "Q187685"],
             )
+
+            dict_and_key.add_key()
+    except KeyboardInterrupt as e:
+        dict_and_key.save_dict()
+
+    dict_and_key.save_dict()
 
 
 if __name__ == "__main__":
