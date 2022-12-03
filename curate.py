@@ -6,19 +6,6 @@ from pathlib import Path
 import random
 
 
-
-
-
-
-
-
-def convert_xref_to_wikidata(xref)
-    "Converts an xref to a property value pair for Wikidata"
-
-    if 
-
-
-
 def main():
     HERE = Path(__file__).parent.resolve()
     df = pd.read_csv("cl_clean.csv")
@@ -28,7 +15,7 @@ def main():
 
     ids_to_add = sorted(ids_to_add)
 
-    #random.shuffle(ids_to_add)
+    random.shuffle(ids_to_add)
 
     try:
         for id_to_add in ids_to_add:
@@ -38,13 +25,19 @@ def main():
 
             id_property_value_pairs = {"P7963": [row["id"].item()]}
 
-            for xref in row["xref"].split("|"):
-
-              key, value = convert_xref_to_wikidata(xref)
-              if key in id_property_value_pairs:
-                id_property_value_pairs[key].append(value)
-              else: 
-                id_property_value_pairs[key] = value
+            if row["xrefs"].item() == row["xrefs"].item():  # Test nan
+                print(row["xrefs"].item())
+                for xref in row["xrefs"].item().split("|"):
+                    try:
+                        key_value_tuple = convert_id_to_wikidata(xref)
+                        key = key_value_tuple[0]
+                        value = key_value_tuple[1]
+                        if key in id_property_value_pairs:
+                            id_property_value_pairs[key].append(value)
+                        else:
+                            id_property_value_pairs[key] = [value]
+                    except:
+                        continue
 
             dict_and_key = WikidataDictAndKey(
                 master_dict=master_dict,
@@ -66,6 +59,27 @@ def main():
         dict_and_key.save_dict()
 
     dict_and_key.save_dict()
+
+
+def convert_id_to_wikidata(id_in_obo):
+
+    domain = id_in_obo.split(":")[0]
+    id_string = id_in_obo.split(":")[1]
+
+    domain2statements = {
+        "FMA": {"property": "P1402", "formatting_function": str},
+        "BTO": {"property": "P5501", "formatting_function": lambda a: "BTO:" + a},
+    }
+    if domain in domain2statements:
+
+        property_value_pair = (
+            domain2statements[domain]["property"],
+            domain2statements[domain]["formatting_function"](id_string),
+        )
+    else:
+        property_value_pair = ()
+
+    return property_value_pair
 
 
 if __name__ == "__main__":

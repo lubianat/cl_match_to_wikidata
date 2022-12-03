@@ -14,7 +14,6 @@ def main():
     xrefs = df["xrefs"].dropna()
 
     xrefs = list(chain.from_iterable([a.split("|") for a in xrefs]))
-
     xref_domains = list(set([xref.split(":")[0] for xref in xrefs]))
     print(xref_domains)
 
