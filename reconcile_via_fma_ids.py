@@ -1,13 +1,12 @@
-from wdcuration import query_wikidata, render_qs_url
 import json
-from pathlib import Path
-from black import main
-import pandas as pd
-import json
-from wdcuration.wdcuration import check_and_save_dict, WikidataDictAndKey, NewItemConfig
-from pathlib import Path
 import random
+from pathlib import Path
 
+import pandas as pd
+from black import main
+from wdcuration import query_wikidata, render_qs_url
+from wdcuration.wdcuration import (NewItemConfig, WikidataDictAndKey,
+                                   check_and_save_dict)
 
 HERE = Path(__file__).parent.resolve()
 

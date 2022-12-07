@@ -1,6 +1,7 @@
-from wdcuration import query_wikidata
 import json
 from pathlib import Path
+
+from wdcuration import query_wikidata
 
 HERE = Path(__file__).parent.resolve()
 

@@ -1,10 +1,9 @@
-from wdcuration import query_wikidata, render_qs_url
 import json
 from pathlib import Path
+
 import pandas as pd
-import json
+from wdcuration import query_wikidata, render_qs_url
 from wdcuration.wdcuration import check_and_save_dict
-from pathlib import Path
 
 
 def main():

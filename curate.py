@@ -1,28 +1,27 @@
-from black import main
-import pandas as pd
 import json
-from wdcuration.wdcuration import check_and_save_dict, WikidataDictAndKey, NewItemConfig
-from pathlib import Path
 import random
+from pathlib import Path
+
+import pandas as pd
+from black import main
+from wdcuration.wdcuration import (NewItemConfig, WikidataDictAndKey,
+                                   render_qs_url)
 
 
 def main():
     HERE = Path(__file__).parent.resolve()
     df = pd.read_csv("cl_clean.csv")
     previous_cl_matches = json.loads(HERE.joinpath("cl_on_wikidata.json").read_text())
-
     ids_to_add = list(set(df["id"]) - set(previous_cl_matches))
-
     ids_to_add = sorted(ids_to_add)
-
     random.shuffle(ids_to_add)
 
+    to_create = ""
     try:
         for id_to_add in ids_to_add:
 
             row = df[df["id"] == id_to_add]
             master_dict = {"cl_on_wikidata": previous_cl_matches}
-
             id_property_value_pairs = {"P7963": [row["id"].item()]}
 
             if row["xrefs"].item() == row["xrefs"].item():  # Test nan
@@ -54,11 +53,15 @@ def main():
                 excluded_types=["Q13442814", "Q2996394", "Q112193867", "Q187685"],
             )
 
-            dict_and_key.add_key()
+            to_create += dict_and_key.add_key(return_qs=True) + "\n"
     except KeyboardInterrupt as e:
         dict_and_key.save_dict()
+        print(render_qs_url(to_create))
+        return ""
 
     dict_and_key.save_dict()
+    print(render_qs_url(to_create))
+    return ""
 
 
 def convert_id_to_wikidata(id_in_obo):
