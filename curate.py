@@ -4,8 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 from black import main
-from wdcuration.wdcuration import (NewItemConfig, WikidataDictAndKey,
-                                   render_qs_url)
+from wdcuration.wdcuration import NewItemConfig, WikidataDictAndKey, render_qs_url
 
 
 def main():
@@ -16,6 +15,13 @@ def main():
     ids_to_add = sorted(ids_to_add)
     random.shuffle(ids_to_add)
 
+    cell_dict = {
+        "macrophage": "Q184204",
+        "neuron": "Q43054",
+        "endothelial cell": "Q11394395",
+        "T cell": "Q193529",
+    }
+
     to_create = ""
     try:
         for id_to_add in ids_to_add:
@@ -23,6 +29,12 @@ def main():
             row = df[df["id"] == id_to_add]
             master_dict = {"cl_on_wikidata": previous_cl_matches}
             id_property_value_pairs = {"P7963": [row["id"].item()]}
+            item_property_value_pairs = {"P31": ["Q189118"]}
+            if "human" in row["name"].item():
+                item_property_value_pairs["P703"] = ["Q15978631"]
+            for key, value in cell_dict.items():
+                if key in row["name"].item():
+                    item_property_value_pairs["P279"] = [value]
 
             if row["xrefs"].item() == row["xrefs"].item():  # Test nan
                 print(row["xrefs"].item())
@@ -48,9 +60,15 @@ def main():
                     labels={"en": row["name"].item()},
                     descriptions={"en": "cell type"},
                     id_property_value_pairs=id_property_value_pairs,
-                    item_property_value_pairs={"P31": ["Q189118"]},
+                    item_property_value_pairs=item_property_value_pairs,
                 ),
-                excluded_types=["Q13442814", "Q2996394", "Q112193867", "Q187685"],
+                excluded_types=[
+                    "Q13442814",
+                    "Q2996394",
+                    "Q112193867",
+                    "Q187685",
+                    "Q5058355",
+                ],
             )
 
             to_create += dict_and_key.add_key(return_qs=True) + "\n"
