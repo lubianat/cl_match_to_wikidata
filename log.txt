@@ -1,0 +1,148 @@
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+mononuclear cell
+cardiac muscle myoblast
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+mononuclear cell
+cd34-positive, glya-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+mononuclear cell
+cd34-positive, glya-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+mononuclear cell
+cd34-positive, glya-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+cardiac muscle myoblast
+cd8-positive, alpha-beta cytotoxic t cell
+mononuclear cell
+cd34-positive, glya-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+retinal cell
+endothelial cell of periportal hepatic sinusoid
+endothelial cell of pericentral hepatic sinusoid
+Malpighian tubule stellate cell
+uterine cervix squamous cell
+oral mucosa squamous cell
+tonsil squamous cell
+appendix glandular cell
+mammary gland glandular cell
+uterine cervix glandular cell
+colon glandular cell
+epididymis glandular cell
+gallbladder glandular cell
+parathyroid glandular cell
+rectum glandular cell
+salivary gland glandular cell
+seminal vesicle glandular cell
+pancreas exocrine glandular cell
+adrenal gland glandular cell
+foreskin keratinocyte
+compound eye photoreceptor cell
+peripheral nervous system neuron
+anterior horn motor neuron
+placental villous trophoblast
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+retinal cell
+smooth muscle cell of placenta
+lymphoblast
+endothelial cell of periportal hepatic sinusoid
+endothelial cell of pericentral hepatic sinusoid
+Malpighian tubule stellate cell
+uterine cervix squamous cell
+oral mucosa squamous cell
+tonsil squamous cell
+appendix glandular cell
+mammary gland glandular cell
+uterine cervix glandular cell
+colon glandular cell
+epididymis glandular cell
+gallbladder glandular cell
+parathyroid glandular cell
+rectum glandular cell
+salivary gland glandular cell
+seminal vesicle glandular cell
+pancreas exocrine glandular cell
+adrenal gland glandular cell
+foreskin keratinocyte
+compound eye photoreceptor cell
+peripheral nervous system neuron
+anterior horn motor neuron
+placental villous trophoblast
+extratelencephalic-projecting glutamatergic cortical neuron
+lamp5 GABAergic cortical interneuron
+sncg GABAergic cortical interneuron
+vip GABAergic cortical interneuron
+sst GABAergic cortical interneuron
+chandelier pvalb GABAergic cortical interneuron
+L6b glutamatergic cortical neuron
+L5/6 near-projecting glutamatergic neuron of the primary motor cortex
+L4/5 intratelencephalic projecting glutamatergic neuron of the primary motor cortex
+L5 intratelencephalic projecting glutamatergic neuron of the primary motor cortex
+L6 intratelencephalic projecting glutamatergic neuron of the primary motor cortex
+Martinotti neuron
+gamete-nursing cell
+cardiac muscle myoblast
+cardiac muscle myoblast
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+retinal cell
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+retinal cell
+oral mucosa squamous cell
+tonsil squamous cell
+appendix glandular cell
+mammary gland glandular cell
+uterine cervix glandular cell
+cardiac muscle myoblast
+CD8-positive, alpha-beta cytotoxic T cell
+mononuclear cell
+CD34-positive, GlyA-negative erythroid progenitor cell
+myoepithelial cell of mammary gland
+retinal cell
+oral mucosa squamous cell
+tonsil squamous cell
+appendix glandular cell
+mammary gland glandular cell
+uterine cervix glandular cell
