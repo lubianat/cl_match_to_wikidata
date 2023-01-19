@@ -35,7 +35,7 @@ def main():
     for i, row in df.iterrows():
         current_id = str(row["id"]).strip()
         data_for_item = []
-
+        print(current_id)
         if current_id not in existing_terms.keys():
             print(current_id)
             superclasses = []
@@ -43,8 +43,13 @@ def main():
                 uberon_to_wikidata_dict, references, row, data_for_item
             )
 
-            superclasses = extract_parent_classes(
-                BASE_SUPERCLASS, existing_terms, row, superclasses
+            data_for_item = extract_parent_classes(
+                BASE_SUPERCLASS,
+                existing_terms,
+                row,
+                superclasses,
+                data_for_item,
+                references,
             )
 
             database_id = row["id"]
@@ -56,12 +61,6 @@ def main():
             data_for_item.append(
                 wdi_core.WDItemID(value=BASE_TYPE, prop_nr="P31", references=references)
             )
-            for superclass_qid in superclasses:
-                data_for_item.append(
-                    wdi_core.WDItemID(
-                        value=superclass_qid, prop_nr="P279", references=references
-                    )
-                )
 
             data_for_item.append(
                 wdi_core.WDExternalID(
@@ -96,23 +95,24 @@ def main():
                 existing_terms[database_id] = item.wd_item_id
 
             except:
-                print(f"{label} already in Wikidata")
-                continue
+                pass
             print(f"Added {label} to Wikidata")
 
             time.sleep(0.1)
 
 
 def extract_found_in_taxon(references, data_for_item, label):
-    if "," in label:
-        taxon_dict = {"mammalian": "Q7377"}
+    if label != label:
+        return data_for_item
 
-        taxon = label.split(",")[1].strip()
-        if taxon in taxon_dict:
-            raw_label = label.split(",")[0].strip()
-            label = taxon + " " + raw_label
-            taxon_dict = {"mammalian": "Q7377"}
-
+    taxon_dict = {
+        "mammalian": "Q7377",
+        "Nematoda": "Q5185",
+        "Protostomia": "Q5171",
+        "Vertebrata": "Q25241",
+    }
+    for taxon_name in taxon_dict.keys():
+        if taxon_name in label:
             data_for_item.append(
                 wdi_core.WDItemID(
                     value=taxon_dict[taxon],
@@ -120,11 +120,19 @@ def extract_found_in_taxon(references, data_for_item, label):
                     references=references,
                 )
             )
+    if "," in label:
+
+        taxon = label.split(",")[1].strip()
+        if taxon in taxon_dict:
+            raw_label = label.split(",")[0].strip()
+            label = taxon + " " + raw_label
 
     return data_for_item
 
 
 def extract_cross_references(row, property_value_pairs_for_ids):
+    if row["xrefs"] != row["xrefs"]:
+        return property_value_pairs_for_ids
     for xref in row["xrefs"].split("|"):
         try:
             prefix = xref.strip().split(":")[0]
@@ -155,7 +163,11 @@ def extract_cross_references(row, property_value_pairs_for_ids):
     return property_value_pairs_for_ids
 
 
-def extract_parent_classes(BASE_SUPERCLASS, existing_terms, row, superclasses):
+def extract_parent_classes(
+    BASE_SUPERCLASS, existing_terms, row, superclasses, data_for_item, references
+):
+    if row["parents"] != row["parents"]:
+        return data_for_item
     for parent_id in row["parents"].split("|"):
         try:
             parent_id = parent_id.strip().replace(":", "_")
@@ -171,12 +183,22 @@ def extract_parent_classes(BASE_SUPERCLASS, existing_terms, row, superclasses):
             superclasses.remove("Q7868")
         except ValueError:
             pass
-    return superclasses
+
+    for superclass_qid in superclasses:
+        data_for_item.append(
+            wdi_core.WDItemID(
+                value=superclass_qid, prop_nr="P279", references=references
+            )
+        )
+
+    return data_for_item
 
 
 def extract_anatomical_locations(
     uberon_to_wikidata_dict, references, row, data_for_item
 ):
+    if row["parents"] != row["parents"]:
+        return data_for_item
     for parent_id in row["parents"].split("|"):
         try:
             if "BFO:0000050 some UBERON" in parent_id:

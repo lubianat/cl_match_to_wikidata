@@ -7,7 +7,7 @@ robot export --input data/$1.owl \
   --header "ID|LABEL|IAO_0000115|hasDbXref|subClassOf [ID]" \
   --export data/$1.csv
 
-grep -v "obsolete" data/$1.csv | grep -v ",,"| grep -i ^$1:  > data/$1_clean.csv
+grep -v "obsolete" data/$1.csv | grep -i ^$1:  > data/$1_clean.csv
 
 sed -i '1s/^/id,name,description,xrefs,parents\n /' data/$1_clean.csv
 
