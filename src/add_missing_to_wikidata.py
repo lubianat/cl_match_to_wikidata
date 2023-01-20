@@ -33,6 +33,8 @@ def main():
     wdi_login_object = wdi_login.WDLogin(WDUSER, WDPASS)
 
     for i, row in df.iterrows():
+        if row["name"] != row["name"]:  # Test nan
+            continue
         current_id = str(row["id"]).strip()
         data_for_item = []
         print(current_id)
@@ -110,12 +112,13 @@ def extract_found_in_taxon(references, data_for_item, label):
         "Nematoda": "Q5185",
         "Protostomia": "Q5171",
         "Vertebrata": "Q25241",
+        "Fungi": "Q764",
     }
     for taxon_name in taxon_dict.keys():
         if taxon_name in label:
             data_for_item.append(
                 wdi_core.WDItemID(
-                    value=taxon_dict[taxon],
+                    value=taxon_dict[taxon_name],
                     prop_nr="P703",
                     references=references,
                 )
