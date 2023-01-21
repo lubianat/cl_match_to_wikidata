@@ -22,10 +22,8 @@ def main():
     EDIT_SUMMARY = "Create item based on the Cell Ontology"
 
     df = pd.read_csv(f"{DATA}/cl_clean.csv", on_bad_lines="skip", dtype={"id": object})
-
     existing_terms = get_wikidata_items_for_id("P7963")
     uberon_to_wikidata_dict = get_wikidata_items_for_id("P1554")
-
     stated_in_source_statement = wdi_core.WDItemID(
         value=SOURCE_DATABASE, prop_nr="P248", is_reference=True
     )
@@ -70,20 +68,9 @@ def main():
                 )
             )
 
-            property_value_pairs_for_ids = []
-            property_value_pairs_for_ids = extract_cross_references(
-                row, property_value_pairs_for_ids
-            )
-
-            for property_value in property_value_pairs_for_ids:
-                data_for_item.append(
-                    wdi_core.WDExternalID(
-                        value=property_value[1], prop_nr=property_value[0]
-                    )
-                )
+            data_for_item = extract_and_add_cross_references(row, data_for_item)
 
             item = wdi_core.WDItemEngine(data=data_for_item, new_item=True)
-
             item.set_description(BASE_DESCRIPTION, lang="en")
             item.set_label(label=label, lang="en")
             try:
@@ -95,12 +82,24 @@ def main():
                 )
 
                 existing_terms[database_id] = item.wd_item_id
-
             except:
                 pass
             print(f"Added {label} to Wikidata")
 
             time.sleep(0.1)
+
+
+def extract_and_add_cross_references(row, data_for_item):
+    property_value_pairs_for_ids = []
+    property_value_pairs_for_ids = extract_cross_references(
+        row, property_value_pairs_for_ids
+    )
+
+    for property_value in property_value_pairs_for_ids:
+        data_for_item.append(
+            wdi_core.WDExternalID(value=property_value[1], prop_nr=property_value[0])
+        )
+    return data_for_item
 
 
 def extract_found_in_taxon(references, data_for_item, label):
