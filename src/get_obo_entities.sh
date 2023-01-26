@@ -4,12 +4,12 @@ wget -nc -O data/$1.owl  http://purl.obolibrary.org/obo/$1.owl
 
 
 robot export --input data/$1.owl \
-  --header "ID|LABEL|IAO_0000115|hasDbXref|subClassOf [ID]" \
+  --header "ID|LABEL|IAO_0000115|hasDbXref|subClassOf [ID]|hasExactSynonym" \
   --export data/$1.csv
 
 grep -v "obsolete" data/$1.csv | grep -i ^$1:  > data/$1_clean.csv
 
-sed -i '1s/^/id,name,description,xrefs,parents\n /' data/$1_clean.csv
+sed -i '1s/^/id,name,description,xrefs,parents,aliases\n /' data/$1_clean.csv
 
 upperstr=$(echo $1 | tr '[:lower:]' '[:upper:]')
 

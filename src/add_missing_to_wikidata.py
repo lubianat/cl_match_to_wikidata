@@ -4,7 +4,7 @@ from re import S
 from this import d
 import pandas as pd
 from pathlib import Path
-from wdcuration import get_wikidata_items_for_id
+from wdcuration import get_wikidata_items_for_id, lookup_id
 from wikidataintegrator import wdi_core, wdi_login
 from login import *
 import time
@@ -35,7 +35,7 @@ def main():
             continue
         current_id = str(row["id"]).strip()
         data_for_item = []
-        print(current_id)
+
         if current_id not in existing_terms.keys():
             print(current_id)
             superclasses = []
@@ -68,9 +68,16 @@ def main():
                 )
             )
 
-            data_for_item = extract_and_add_cross_references(row, data_for_item)
+            data_for_item = extract_and_add_cross_references(
+                row, data_for_item, references
+            )
 
             item = wdi_core.WDItemEngine(data=data_for_item, new_item=True)
+
+            if row["aliases"] == row["aliases"]:
+                for alias in row["aliases"].split("|"):
+                    item.set_aliases([alias], append=True)
+
             item.set_description(BASE_DESCRIPTION, lang="en")
             item.set_label(label=label, lang="en")
             try:
@@ -89,52 +96,10 @@ def main():
             time.sleep(0.1)
 
 
-def extract_and_add_cross_references(row, data_for_item):
+def extract_and_add_cross_references(row, data_for_item, references):
     property_value_pairs_for_ids = []
-    property_value_pairs_for_ids = extract_cross_references(
-        row, property_value_pairs_for_ids
-    )
-
-    for property_value in property_value_pairs_for_ids:
-        data_for_item.append(
-            wdi_core.WDExternalID(value=property_value[1], prop_nr=property_value[0])
-        )
-    return data_for_item
-
-
-def extract_found_in_taxon(references, data_for_item, label):
-    if label != label:
-        return data_for_item
-
-    taxon_dict = {
-        "mammalian": "Q7377",
-        "Nematoda": "Q5185",
-        "Protostomia": "Q5171",
-        "Vertebrata": "Q25241",
-        "Fungi": "Q764",
-    }
-    for taxon_name in taxon_dict.keys():
-        if taxon_name in label:
-            data_for_item.append(
-                wdi_core.WDItemID(
-                    value=taxon_dict[taxon_name],
-                    prop_nr="P703",
-                    references=references,
-                )
-            )
-    if "," in label:
-
-        taxon = label.split(",")[1].strip()
-        if taxon in taxon_dict:
-            raw_label = label.split(",")[0].strip()
-            label = taxon + " " + raw_label
-
-    return data_for_item
-
-
-def extract_cross_references(row, property_value_pairs_for_ids):
     if row["xrefs"] != row["xrefs"]:
-        return property_value_pairs_for_ids
+        return data_for_item
     for xref in row["xrefs"].split("|"):
         try:
             prefix = xref.strip().split(":")[0]
@@ -144,6 +109,15 @@ def extract_cross_references(row, property_value_pairs_for_ids):
             elif prefix == "FMA":
                 property_value_pairs_for_ids.append(
                     ("P1402", xref.strip().split(":")[1])
+                )
+            elif prefix == "PMID":
+                publication = lookup_id(xref.strip().split(":")[1])
+                data_for_item.append(
+                    wdi_core.WDItemID(
+                        value=publication,
+                        prop_nr="P1343",
+                        references=references,
+                    )
                 )
             elif prefix in [
                 "FAO",
@@ -162,7 +136,44 @@ def extract_cross_references(row, property_value_pairs_for_ids):
                 pass
         except:
             pass
-    return property_value_pairs_for_ids
+
+    for property_value in property_value_pairs_for_ids:
+        data_for_item.append(
+            wdi_core.WDExternalID(value=property_value[1], prop_nr=property_value[0])
+        )
+    return data_for_item
+
+
+def extract_found_in_taxon(references, data_for_item, label):
+    if label != label:
+        return data_for_item
+
+    taxon_dict = {
+        "mammalian": "Q7377",
+        "Nematoda": "Q5185",
+        "Protostomia": "Q5171",
+        "Vertebrata": "Q25241",
+        "Fungi": "Q764",
+        "Endopterygota": "Q304358",
+        "sensu Mus": "Q39275",
+    }
+    for taxon_name in taxon_dict.keys():
+        if taxon_name in label:
+            data_for_item.append(
+                wdi_core.WDItemID(
+                    value=taxon_dict[taxon_name],
+                    prop_nr="P703",
+                    references=references,
+                )
+            )
+    if "," in label:
+
+        taxon = label.split(",")[1].strip()
+        if taxon in taxon_dict:
+            raw_label = label.split(",")[0].strip()
+            label = taxon + " " + raw_label
+
+    return data_for_item
 
 
 def extract_parent_classes(
@@ -205,6 +216,7 @@ def extract_anatomical_locations(
         try:
             if "BFO:0000050 some UBERON" in parent_id:
                 uberon_id = parent_id.replace("BFO:0000050 some UBERON:", "")
+                uberon_id = uberon_id.replace("BFO:0000050 some UBERON_", "")
                 anatomical_location_qid = uberon_to_wikidata_dict[uberon_id]
                 data_for_item.append(
                     wdi_core.WDItemID(
