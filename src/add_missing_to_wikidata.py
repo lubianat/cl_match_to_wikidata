@@ -56,7 +56,9 @@ def main():
 
             label = row["name"]
 
-            data_for_item = extract_found_in_taxon(references, data_for_item, label)
+            data_for_item, label = extract_found_in_taxon(
+                references, data_for_item, label
+            )
 
             data_for_item.append(
                 wdi_core.WDItemID(value=BASE_TYPE, prop_nr="P31", references=references)
@@ -146,8 +148,7 @@ def extract_and_add_cross_references(row, data_for_item, references):
 
 def extract_found_in_taxon(references, data_for_item, label):
     if label != label:
-        return data_for_item
-
+        return data_for_item, label
     taxon_dict = {
         "mammalian": "Q7377",
         "Nematoda": "Q5185",
@@ -156,6 +157,7 @@ def extract_found_in_taxon(references, data_for_item, label):
         "Fungi": "Q764",
         "Endopterygota": "Q304358",
         "sensu Mus": "Q39275",
+        "human": "Q15978631",
     }
     for taxon_name in taxon_dict.keys():
         if taxon_name in label:
@@ -168,12 +170,13 @@ def extract_found_in_taxon(references, data_for_item, label):
             )
     if "," in label:
 
-        taxon = label.split(",")[1].strip()
+        taxon = label.split(",")[-1].strip()
         if taxon in taxon_dict:
-            raw_label = label.split(",")[0].strip()
+            raw_label = label.split(",")
+            raw_label = ",".join(raw_label[:-1]).strip()
             label = taxon + " " + raw_label
 
-    return data_for_item
+    return data_for_item, label
 
 
 def extract_parent_classes(
