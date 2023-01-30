@@ -42,7 +42,6 @@ def main():
             data_for_item = extract_anatomical_locations(
                 uberon_to_wikidata_dict, references, row, data_for_item
             )
-
             data_for_item = extract_parent_classes(
                 BASE_SUPERCLASS,
                 existing_terms,
@@ -51,29 +50,22 @@ def main():
                 data_for_item,
                 references,
             )
-
             database_id = row["id"]
-
-            label = row["name"]
-
-            data_for_item, label = extract_found_in_taxon(
-                references, data_for_item, label
-            )
-
             data_for_item.append(
                 wdi_core.WDItemID(value=BASE_TYPE, prop_nr="P31", references=references)
             )
-
             data_for_item.append(
                 wdi_core.WDExternalID(
                     value=str(database_id), prop_nr=SOURCE_DATABASE_PROPERTY
                 )
             )
-
             data_for_item = extract_and_add_cross_references(
                 row, data_for_item, references
             )
-
+            label = row["name"]
+            data_for_item, label = extract_found_in_taxon(
+                references, data_for_item, label
+            )
             item = wdi_core.WDItemEngine(data=data_for_item, new_item=True)
 
             if row["aliases"] == row["aliases"]:
@@ -83,13 +75,11 @@ def main():
             item.set_description(BASE_DESCRIPTION, lang="en")
             item.set_label(label=label, lang="en")
             try:
-                print(item.wd_item_id)
                 item.write(
                     wdi_login_object,
                     bot_account=False,
                     edit_summary=EDIT_SUMMARY,
                 )
-
                 existing_terms[database_id] = item.wd_item_id
             except:
                 pass
