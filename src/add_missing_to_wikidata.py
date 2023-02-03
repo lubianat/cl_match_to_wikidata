@@ -147,7 +147,11 @@ def extract_found_in_taxon(references, data_for_item, label):
         "Fungi": "Q764",
         "Endopterygota": "Q304358",
         "sensu Mus": "Q39275",
+        "Mus musculus": "Q83310",
+        "Mmus": "Q83310",
+        "Hsap": "Q15978631",
         "human": "Q15978631",
+        "mouse": "Q83310",
     }
     for taxon_name in taxon_dict.keys():
         if taxon_name in label:
@@ -216,6 +220,27 @@ def extract_anatomical_locations(
                         value=anatomical_location_qid,
                         prop_nr="P927",
                         references=references,
+                    )
+                )
+        except:
+            pass
+        try:
+            if "RO:0002100 some UBERON" in parent_id:
+                uberon_id = parent_id.replace("RO_0002100 some UBERON:", "")
+                uberon_id = uberon_id.replace("RO_0002100 some UBERON_", "")
+                anatomical_location_qid = uberon_to_wikidata_dict[uberon_id]
+
+                qualifier = [
+                    wdi_core.WDItemID(
+                        value="Q14864866", prop_nr="P518", is_qualifier=True
+                    )
+                ]
+                data_for_item.append(
+                    wdi_core.WDItemID(
+                        value=anatomical_location_qid,
+                        prop_nr="P927",
+                        references=references,
+                        qualifiers=qualifier,
                     )
                 )
         except:
