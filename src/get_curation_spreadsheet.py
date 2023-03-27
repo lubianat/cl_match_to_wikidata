@@ -1,15 +1,20 @@
 import pandas as pd
 import json
-from pathlib import Path
 from wdcuration import generate_curation_spreadsheet
+
+from pathlib import Path
+
+HERE = Path(__file__).parent.resolve()
+DATA = HERE.parent.joinpath("data").resolve()
+RESULTS = HERE.parent.joinpath("results").resolve()
 
 
 def main():
     generate_curation_spreadsheet(
-        curation_table_path="cl_clean.csv",
-        identifiers_property="P7963",
+        curation_table_path=DATA.joinpath("uberon_clean.csv"),
+        identifiers_property="P1554",
+        description_term_lookup="gallbladder",
         output_file_path="curation_sheet.csv",
-        fixed_type="Q189118",
     )
 
 
