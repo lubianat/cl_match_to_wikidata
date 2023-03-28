@@ -10,6 +10,8 @@ from wdcuration import (
     WikidataDictAndKey,
     check_and_save_dict,
 )
+import time
+from tqdm import tqdm
 
 
 def get_new_pid2wikidata(NEW_PID):
@@ -18,32 +20,34 @@ def get_new_pid2wikidata(NEW_PID):
     return {a["new_pid"]: a["qid"] for a in results}
 
 
-def get_wikidata_ids_from_wikipedia_pages(pages):
-    # Wikidata API endpoint
-    endpoint = "https://www.wikidata.org/w/api.php"
-
-    # Query parameters
+def get_ids_from_pages(pages):
+    """
+    Returns a dictionary with page titles as keys and Wikidata QIDs as values
+    """
+    url = "https://en.wikipedia.org/w/api.php?action=query"
     params = {
-        "action": "wbgetentities",
-        "sites": "enwiki",
-        "titles": "|".join(pages),
-        "props": "",
         "format": "json",
+        "prop": "pageprops",
+        "ppprop": "wikibase_item",
+        "redirects": "1",
+        "titles": "|".join(pages),
     }
+    r = requests.get(url, params)
+    data = r.json()
+    id_dict = {}
+    for key, values in data["query"]["pages"].items():
+        title = values["title"]
+        if "pageprops" in values:
+            qid = values["pageprops"]["wikibase_item"]
+            id_dict[title] = qid
 
-    # Make the API request
-    response = requests.get(endpoint, params=params).json()
+    return id_dict
 
-    # Extract the Wikidata IDs from the response
-    wikidata_ids = {}
-    for page_id, page_data in response["entities"].items():
-        if page_data.get("sitelinks"):
-            wikipedia_title = page_data["sitelinks"]["enwiki"]["title"]
-            wikidata_id = page_id
-            wikidata_ids[wikipedia_title] = wikidata_id
 
-    # Print the result
-    return wikidata_ids
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i : i + n]
 
 
 def process_data(NEW_PID, DATA_DIR, reference_prefix):
@@ -55,7 +59,6 @@ def process_data(NEW_PID, DATA_DIR, reference_prefix):
         error_bad_lines=False,
     )
     current_wikidata_coverage = set(new_pid2wikidata.keys())
-    ids_to_add = sorted(set(df["id"]) - current_wikidata_coverage)
     df = df.dropna(subset=["xrefs"])
     reference2new_id = {}
     for i, row in df.iterrows():
@@ -66,8 +69,23 @@ def process_data(NEW_PID, DATA_DIR, reference_prefix):
                     reference2new_id[xref.split(":")[1]] = row["id"]
 
     wikipedia_pages = [a.replace("_", " ") for a in list(reference2new_id.keys())]
-    qids = get_wikidata_ids_from_wikipedia_pages(wikipedia_pages[0:3])
-    print(qids)
+    pages_with_wikidata_ids = {}
+
+    size = int(len(wikipedia_pages) / 50)
+    for pages in tqdm(chunks(wikipedia_pages, 50), total=size):
+        pages_with_wikidata_ids.update(get_ids_from_pages(pages))
+        time.sleep(0.2)
+
+    print(pages_with_wikidata_ids)
+
+    qs = ""
+    for reference_id, new_id in reference2new_id.items():
+        if new_id not in new_pid2wikidata.keys():
+            if reference_id.replace("_", " ") in pages_with_wikidata_ids.keys():
+                qid = pages_with_wikidata_ids[reference_id.replace("_", " ")]
+                qs += f'{qid}|{NEW_PID}|"{new_id}"|S887|Q117319166|S248|Q7876491\n'
+
+    return qs
 
 
 def main():
